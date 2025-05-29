@@ -1,6 +1,6 @@
 # TensorGRaD: Tensor Gradient Robust Decomposition for Memory-Efficient Neural Operator Training
 
-This repository contains the official implementation of **TensorGRaD**, a memory-efficient gradient optimization framework for training large-scale neural operators. TensorGRaD uses a robust combination of low-rank tensor decomposition and unstructured sparsification to compress gradient updates—achieving significant memory savings while maintaining or even improving model performance.
+This repository contains the official implementation of **TensorGRaD**, a memory-efficient gradient optimization framework for training large-scale neural operators. TensorGRaD uses a robust combination of low-rank tensor decomposition and unstructured sparsification to compress gradient updates. TensorGRaD achieves significant memory savings while maintaining or even improving model performance.
 
 ## Installation
 
