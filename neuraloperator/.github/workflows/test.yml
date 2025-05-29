@@ -1,0 +1,40 @@
+name: Test neuralop
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+    - name: Install TensorLy and TensorLy-Torch dev
+      run: |
+        CWD=`pwd`
+        echo 'Cloning repos in ${CWD}'
+        mkdir git_repos
+        cd git_repos
+        git clone https://github.com/tensorly/tensorly
+        cd tensorly
+        python -m pip install -e .
+        cd ..
+        git clone https://github.com/tensorly/torch
+        cd torch
+        python -m pip install -e .
+        cd ../..
+    - name: Install Pytorch
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+    - name: Install package
+      run: |
+        python -m pip install --upgrade pip setuptools
+        python -m pip install -e .[dev]
+    - name: Test with pytest
+      run: |
+        pytest -vvv neuralop

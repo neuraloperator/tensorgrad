@@ -1,0 +1,148 @@
+default: &DEFAULT
+
+  #General
+  # For computing compression
+  n_params_baseline: None
+  verbose: True
+  arch: 'fno'
+
+  #Distributed computing
+  distributed:
+    use_distributed: False
+    seed: 42
+
+  # FNO related
+  fno:
+    data_channels: 1
+    out_channels: 1
+    n_modes: [64,64]
+    hidden_channels: 64
+    projection_channel_ratio: 4 # TODO set as ratio - projectio to hidden channel ratio
+    n_layers: 4
+    
+    domain_padding: 0 #0.078125
+    domain_padding_mode: 'one-sided' #symmetric
+    fft_norm: 'forward'
+    norm: None
+    skip: 'linear'
+    implementation: 'reconstructed'
+    positional_embedding: 'grid'
+    use_channel_mlp: 1
+    channel_mlp_expansion: 0.5
+    channel_mlp_dropout: 0
+
+    activation_checkpoint: False
+
+    separable: False
+    factorization: None
+    rank: 1.0
+    fixed_rank_modes: None
+    dropout: 0.0
+    tensor_lasso_penalty: 0.0
+    joint_factorization: False
+    fno_block_precision: 'full' # or 'half', 'mixed'
+    fno_block_weights_precision: 'full' # or 'half', 'mixed'
+    stabilizer: None # or 'tanh'
+
+  # Optimizer
+  opt:
+    n_epochs: 500
+    checkpointing: False
+    profiling: False
+    max_batches: None
+    resume_from_dir: "./ckpts"
+    save_dir: "./ckpts"
+    save_every: 10
+    learning_rate: 0
+    training_loss: 'h1'
+    weight_decay: 1e-4
+    amp_autocast: False
+    enforce_full_complex_precision: True
+    #lr scheduler parameters
+    scheduler_T_max: 500 # For cosine only, typically take n_epochs
+    scheduler_patience: 50 # For ReduceLROnPlateau only
+    scheduler: 'StepLR' # Or 'CosineAnnealingLR' OR 'ReduceLROnPlateau'
+    step_size: 100
+    gamma: 0.5
+    # galore parameters
+    tucker_warm_restart: True
+    per_layer_opt: False
+    activation_checkpoint: False # change in later experiments
+    naive_galore: False # change this within scripts
+    first_dim_rollup: 1 # change this within scripts
+    adamw_support_complex: True
+
+
+    # Composite Adam parameters
+    tensorgrad_sum_lambda_sparse: 1.0 # 1 means that low ranks and sparse components are weighted equally, if 0 or none composite adam computes lambda_sparse from sparse_ratio and rank, if between 0 and 1, sparse part is weighted by this value
+
+    
+    # scheduler update gap parameters
+    update_proj_gap: 400 # start gap
+    update_proj_gap_end: 400          # end gap
+    update_proj_gap_mode: 'fixed'  # mode - fixed, linear, exponential
+    
+    tensorgrad: True
+    svd_type: 'truncated_svd'  # Options: 'randomized_svd' or 'truncated_svd'
+    n_iter_max_tucker: 1
+    optimizer_type: 'adamw' # or 'tensorgrad' for composite projectors
+    galore_2d_proj_type: left 
+
+
+
+    # Base parameters (used for first projector in tensorgrad, or single projector otherwise)
+    proj_type: "low_rank"  # Options: unstructured_sparse, structured_sparse, low_rank
+    rank: [1.0]  # Used if projector is low_rank
+    sparse_ratio: [0.5]  # Used if projector is sparse
+    sparse_type: "randk"  # Options: randk,topk,probability
+    scale: 1.0 
+    scale_by_mask_ratio: False # if True and sparse projector is used, scale will be multiplied by the mask ratio
+    
+    # Second projector parameters (only used if optimizer_type is tensorgrad)
+    second_proj_type: "unstructured_sparse"  # Options: unstructured_sparse, structured_sparse, low_rank
+    second_sparse_ratio: [0.05]  # Used if second projector is sparse
+    second_sparse_type: "randk"  # Options: randk,topk,probability
+    second_scale: 1.0
+    second_rank: [1.0]  # Used if second projector is low_rank
+    second_scale_by_mask_ratio: False # if True and sparse projector is used, scale will be multiplied by the mask ratio
+    
+    reset_optimizer_states: False
+
+    
+
+    
+
+  # Dataset related
+  data:
+    root: data/navier_stokes/ns_data/16traj
+    batch_size: 8
+    n_train: 10000
+    train_resolution: 1024
+    n_tests: [2000]
+    test_resolutions: [1024]
+    test_batch_sizes: [16]
+    encode_input: True
+    max_chunk_data_fitting: 4000
+    num_workers: 8  # Number of workers for DataLoader
+    encode_output: True
+    download: True
+
+  # Patching
+  patching:
+    levels: 0
+    padding: 0
+    stitching: False
+  
+  # Weights and biases
+  wandb:
+    log: True
+    name: "" # If None, config will be used but you can override it here
+    group: None
+    project: "tensorgrad" 
+    entity: "wandb_entity" # put your username here
+    sweep: False
+    log_output: True
+    log_test_interval: 1
+    resume: "allow"
+    log_train_interval: -1 # -1 means no logging and 1 means every step, N means every N steps
+    log_ranks_interval: -1 # -1 means no logging and 1 means every step, N means every N steps

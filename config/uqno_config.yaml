@@ -1,0 +1,113 @@
+default: &DEFAULT
+
+  #General
+  # For computing compression
+  n_params_baseline: None
+  verbose: True
+  arch: 'tfno2d'
+  load_soln_model: False
+  soln_checkpoint: darcy_421_soln #None
+  load_resid_model: False
+  resid_checkpoint: best_model #darcy_421_residual
+
+  #Distributed computing
+  distributed:
+    use_distributed: False
+    wireup_info: 'mpi'
+    wireup_store: 'tcp'
+    model_parallel_size: 2
+    seed: 666
+
+  # FNO related
+  tfno2d:
+    data_channels: 3
+    n_modes_height: 6
+    n_modes_width: 6
+    hidden_channels: 12
+    projection_channels: 12
+    n_layers: 4
+    lifting_channels: None
+    #domain_padding: None #0.078125
+    #domain_padding_mode: 'one-sided' #symmetric
+    #fft_norm: 'forward'
+    norm: None
+    #skip: 'linear'
+    implementation: 'factorized'
+    #separable: 0
+    #preactivation: 0
+    factorization: tucker
+    rank: 0.42
+    #fixed_rank_modes: None
+    #dropout: 0.0
+    #tensor_lasso_penalty: 0.0
+    #joint_factorization: False
+    #fno_block_precision: 'full' # or 'half', 'mixed'
+    #use_mlp: False
+    #mlp:
+    #    expansion: 0.5
+    #    dropout: 0
+    #stabilizer: None # or 'tanh'
+
+  # Optimizer
+  opt:
+    solution:
+      n_epochs: 500
+      learning_rate: 1e-3
+      training_loss: 'h1'
+      weight_decay: 1e-5
+      amp_autocast: False
+      scheduler: 'StepLR'
+      step_size: 80
+      gamma: 0.6
+    residual: 
+      n_epochs: 900
+      learning_rate: 1e-3
+      training_loss: 'quantile'
+      weight_decay: 1e-5
+      amp_autocast: False
+      scheduler_T_max: 900 # For cosine only, typically take n_epochs
+      scheduler_patience: 50 # For ReduceLROnPlateau only
+      scheduler: 'StepLR' # Or 'CosineAnnealingLR' OR 'ReduceLROnPlateau'
+      step_size: 60
+      gamma: 0.7
+    # alpha, delta params for UQNO 
+    alpha: 0.1
+    delta: 0.02
+
+  # Dataset related
+  data:
+    data_root: data/darcy
+    batch_size: 64
+    n_train_total: 4000
+    n_train_solution: 1500
+    n_train_residual: 1500
+    n_calib_residual: 1000
+    train_resolution: 421
+    n_test: 1000
+    sub: 1
+    test_batch_size: 64
+    #test_resolutions: [421]
+    #test_batch_sizes: [8]
+    positional_encoding: True
+    encode_input: True
+    max_chunk_data_fitting: 4000
+    num_workers: 8  # Number of workers for DataLoader
+    encode_output: True
+    eval_on_unnormalized: True
+
+  # Patching
+  patching:
+    levels: 0
+    padding: 0
+    stitching: False
+
+  # Weights and biases
+  wandb:
+    log: False
+    name: proper-resid-train-eval # If None, config will be used but you can override it here
+    group: '' 
+    project: "uqno-darcy"
+    entity: "dhpitt" # put your username here
+    sweep: False
+    log_output: True
+    log_test_interval: 1

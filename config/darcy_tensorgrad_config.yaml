@@ -1,0 +1,148 @@
+default: &DEFAULT
+
+  #General
+  # For computing compression
+  n_params_baseline: None
+  verbose: True
+  arch: 'fno2d'
+
+  #Distributed computing
+  distributed:
+    use_distributed: False
+    wireup_info: 'mpi'
+    wireup_store: 'tcp'
+    model_parallel_size: 2
+    seed: 666
+
+  # FNO related
+  fno2d:
+    data_channels: 1
+    n_modes_height: 64
+    n_modes_width: 64
+    hidden_channels: 128
+    projection_channels: 128
+    projection_channel_ratio: 2
+    n_layers: 4
+    domain_padding: 0. #0.078125
+    domain_padding_mode: 'one-sided' #symmetric
+    fft_norm: 'forward'
+    norm: None
+    skip: 'soft-gating'
+    implementation: 'reconstructed'
+    
+    use_mlp: 1
+    mlp_expansion: 0.5
+    mlp_dropout: 0
+
+    separable: False
+    factorization: None
+    rank: 1.0
+    fixed_rank_modes: None
+    dropout: 0.0
+    tensor_lasso_penalty: 0.0
+    joint_factorization: False
+    fno_block_precision: 'full' # or 'half', 'mixed'
+    fno_block_weights_precision: 'full' # or 'half', 'mixed'
+    stabilizer: None # or 'tanh'
+
+  # Optimizer
+  opt:
+    n_epochs: 20
+    learning_rate: 1e-3
+    training_loss: 'h1'
+    weight_decay: 1e-4
+    amp_autocast: False
+    lr: 3e-4
+    scheduler_T_max: 500 # For cosine only, typically take n_epochs
+    scheduler_patience: 5 # For ReduceLROnPlateau only
+    scheduler: 'StepLR' # Or 'CosineAnnealingLR' OR 'ReduceLROnPlateau'
+    step_size: 60
+    gamma: 0.5
+    per_layer_opt: False
+    tensorgrad: True
+    svd_type: 'truncated_svd'  # Options: 'randomized_svd' or 'truncated_svd'
+    galore_scale: 1.0
+    activation_checkpoint: False
+    naive_galore: False
+    naive_galore_support_complex: True
+    first_dim_rollup: 1
+    update_proj_gap: 50
+    galore_proj_type: std
+
+    # New parameters from NS config
+    checkpointing: False
+    profiling: False
+    max_batches: None
+    resume_from_dir: "./ckpts"
+    save_dir: "./ckpts"
+    save_every: 10
+    tucker_warm_restart: True
+    adamw_support_complex: True
+    update_proj_gap_end: 100
+    update_proj_gap_mode: 'fixed'
+    n_iter_max_tucker: 1
+    optimizer_type: 'adamw'
+    galore_2d_proj_type: left
+    projector_use_mixed_precision: False
+    proj_type: "low_rank"
+    rank: [1.0]
+    sparse_ratio: [0.5]
+    sparse_type: "randk"
+    scale: 1.0
+    scale_by_mask_ratio: False
+    second_proj_type: "unstructured_sparse"
+    second_sparse_ratio: [0.05]
+    second_sparse_type: "randk"
+    second_scale: 1.0
+    second_rank: [1.0]
+    second_scale_by_mask_ratio: False
+    log_scaling_factors: False
+    memory_efficient_optim: None
+    reset_optimizer_states: False
+
+  # Dataset related
+  data:
+    train_path: data/darcy/
+    batch_size: 2
+    n_train: 10
+    train_resolution: 128
+    n_tests: [10]
+    test_resolutions: [128]
+    test_batch_sizes: [2]
+    #positional_encoding: True
+
+    encode_input: True
+    max_chunk_data_fitting: 4000
+    num_workers: 8  # Number of workers for DataLoader
+    encode_output: False
+
+  # Patching
+  patching:
+    levels: 0
+    padding: 0
+    stitching: False
+    
+  incremental:
+    incremental_loss_gap: False
+    incremental_grad: False
+    incremental_res: False
+    grad_eps: 0.99999
+    max_iter: 1
+    loss_eps: 0.01
+    grad_max: 2
+    epoch_gap: 50
+
+  
+  # Weights and biases
+  wandb:
+    log: True
+    name: "" # If None, config will be used but you can override it here
+    group: None
+    project: "tensorgrad" 
+    entity: "wandb_entity" # put your username here
+    sweep: False
+    log_output: True
+    log_test_interval: 1
+    resume: "allow"
+    log_train_interval: -1 # -1 means no logging and 1 means every step, N means every N steps
+    log_ranks_interval: -1 # -1 means no logging and 1 means every step, N means every N steps

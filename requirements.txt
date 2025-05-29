@@ -1,0 +1,22 @@
+numpy>=1.26.4
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch==2.4.0
+torchaudio==2.4.0
+torchvision==0.19.0
+wandb==0.17.5
+ruamel.yaml==0.18.6
+configmypy==0.2.0
+matplotlib==3.9.1
+opt-einsum==3.3.0
+h5py==3.11.0
+zarr==2.18.2
+pytest==8.3.1
+more-itertools==10.4.0
+scipy==1.14.0
+torch-harmonics==0.7.3
+torch-optimizer==0.3.0
+pandas==2.2.3
+tqdm==4.67.1
+-e ./tensorly
+-e ./neuraloperator
+
