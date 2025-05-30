@@ -49,9 +49,8 @@ class TensorGradUnstructuredProjector:
         self._indices = None
         self._last_iter = -1
         
-        if self.verbose:
-            print(f"Update gap scheduler: {self.update_gap_scheduler}")
-            print(f"UnstructuredSparseProjector initialized with sparse_ratio={self.sparse_ratio}, sparse_type={self.sparse_type}, scale_by_mask_ratio={self.scale_by_mask_ratio}")
+        print(f"Update gap scheduler: {self.update_gap_scheduler}")
+        print(f"UnstructuredSparseProjector initialized with sparse_ratio={self.sparse_ratio}, sparse_type={self.sparse_type}, scale_by_mask_ratio={self.scale_by_mask_ratio}")
         
     def should_update_projector(self, iteration):
         """Check if the projector indices should be updated in this iteration"""
@@ -121,8 +120,16 @@ class TensorGradUnstructuredProjector:
             # Convert to the same dtype as the output buffer to avoid dtype mismatch in scatter_
             vals = (small_grad * (self.scale_factor * alpha)).to(output_buffer.dtype)
             
-            # Get flattened view of buffer
-            flat = output_buffer.reshape(-1) #  buffer not always contiguous so cannot use view
+            # Store original shape to reshape back at the end
+            original_shape = output_buffer.shape
+            
+            # Get flattened version of buffer - try to use view first
+            if output_buffer.is_contiguous():
+                flat = output_buffer.view(-1)
+            else:
+                # Need to reshape if not contiguous, but this creates a new tensor
+                # We'll need to copy back to the original buffer at the end
+                flat = output_buffer.reshape(-1)
             
             # Check if we're using ComplexHalf dtype which doesn't support scatter operations
             is_complex_half = flat.dtype == torch.complex32
@@ -149,6 +156,14 @@ class TensorGradUnstructuredProjector:
                 else:
                     # Accumulate mode: add to whatever is already in the buffer
                     flat.scatter_add_(0, self._indices, vals)
+            
+            # If we had to reshape, copy the modified flat tensor back to output_buffer
+            if not output_buffer.is_contiguous():
+                # Reshape flat back to original shape
+                modified = flat.reshape(original_shape)
+                # Copy back to the original buffer
+                output_buffer.copy_(modified)
+                
             return output_buffer
 
     def _build_indices(self, x: torch.Tensor):
@@ -163,7 +178,7 @@ class TensorGradUnstructuredProjector:
             if self.sparse_type.lower() == "topk":
                 # pick topk by absolute value
                 vals = flat.abs()
-                _, idx = torch.topk(vals, k)
+                topk_vals, idx = torch.topk(vals, k)
             elif self.sparse_type.lower() == "probability":
                 # Probability is weighted by absolute value
                 vals = flat.abs()
