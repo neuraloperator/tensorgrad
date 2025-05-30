@@ -12,7 +12,6 @@ common_params=" \
     --opt.learning_rate 0.001 \
     --fno.fno_block_precision full \
     --fno.fno_block_weights_precision full \
-    --wandb.log True \
     --opt.update_proj_gap 1000 \
     --opt.tensorgrad True \
     --opt.enforce_full_complex_precision True \

@@ -1,14 +1,3 @@
-#!/bin/bash
-#SBATCH --job-name=my_gh_dev_job
-#SBATCH --partition=gh-dev
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=64
-#SBATCH --time=1:00:00
-#SBATCH -o output_files/mps_job.%j.out
-#SBATCH -e output_files/mps_job.%j.err
-#SBATCH --account=NAIRR240304
-
 # Create output directory if it doesn't exist
 mkdir -p output_files
 

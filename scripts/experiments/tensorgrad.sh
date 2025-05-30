@@ -17,9 +17,7 @@ composite_common_params=" \
     --opt.tensorgrad True"
 
 
-port=25000
-
-$base_cmd --master_port $((port)) train_ns_repro_tensorgrad.py $composite_common_params \
+$base_cmd train_ns_repro_tensorgrad.py $composite_common_params \
     --wandb.name US_LR_25%_half \
     --fno.fno_block_precision mixed \
     --fno.fno_block_weights_precision half \
@@ -28,7 +26,7 @@ $base_cmd --master_port $((port)) train_ns_repro_tensorgrad.py $composite_common
     --opt.sparse_ratio 0.05 
     
 
-$base_cmd --master_port $((port)) train_ns_repro_tensorgrad.py $composite_common_params \
+$base_cmd train_ns_repro_tensorgrad.py $composite_common_params \
     --wandb.name US_LR_25%_full \
     --fno.fno_block_precision full \
     --fno.fno_block_weights_precision full \
