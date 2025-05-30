@@ -1,6 +1,6 @@
 # TensorGRaD: Tensor Gradient Robust Decomposition for Memory-Efficient Neural Operator Training
 
-This repository contains the official implementation of **TensorGRaD**, a memory-efficient gradient optimization framework for training large-scale neural operators. TensorGRaD uses a robust combination of low-rank tensor decomposition and unstructured sparsification to compress gradient updates—achieving significant memory savings while maintaining or even improving model performance.
+This repository contains the official implementation of **TensorGRaD**, a memory-efficient gradient optimization framework for training large-scale neural operators. TensorGRaD uses a robust combination of low-rank tensor decomposition and unstructured sparsification to compress gradient updates. TensorGRaD achieves significant memory savings while maintaining or even improving model performance.
 
 ## Installation
 
@@ -26,8 +26,8 @@ pip install -r requirements.txt
 
 TensorGRaD is a drop-in optimizer that replaces standard optimizers like AdamW. It applies compression at the gradient level through:
 - **Low-rank decomposition** using a Tucker higher-order low-rank decomposition
-- **Gradient sparsification** using structured or unstructured sparsity (top-$k$, random-$k$, or probabilistic)
-- Support for **composite projectors** combining both methods for aggressive compression
+- **Gradient sparsification** using structured or unstructured sparsity (top-k, random-k, or probabilistic)
+- **Composite projectors** that combine low-rank and sparse compression in a compositional manner: TensorGRaD first applies either a low-rank or sparse decomposition to the gradient, then compresses the residual using the second method. This sequential scheme ensures that low-rank and sparse components complement each other for more effective compression.
 
 TensorGRaD supports mixed-precision training and is implemented for scientific ML workloads that optimize tensors.
 
