@@ -77,6 +77,7 @@ class TensorGRaD(Optimizer):
         self.id_counter = 0
         self.use_sum = use_sum
         self.run_name = run_name
+        self.reset_sparse_optim_state = True
 
         if enforce_full_complex_precision:
             print("### Using TensorGRaD with full complex precision for states ###")
@@ -218,7 +219,13 @@ class TensorGRaD(Optimizer):
                             state["rank"] = first_grad.numel() / state["total_params"]
                         print(f"Total params: {state['total_params']}")
                         print(f"Sparse ratio: {state['sparse_ratio']} and rank: {state['rank']}")
-                        
+                    else:
+                        # check if sparse is first and should_update_projector
+                        if state["sparse_is_first"] and self.reset_sparse_optim_state and state["first_proj"].should_update_projector(state["step"]):
+                            # reset optim state
+                            state["first_exp_avg"] = torch.zeros_like(first_grad, dtype=dtype)
+                            state["first_exp_avg_sq"] = torch.zeros_like(first_grad, dtype=dtype)
+                            
                 else:
                     # Standard Adam buffers.
                     if "exp_avg" not in state:
