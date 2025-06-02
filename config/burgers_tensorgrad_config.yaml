@@ -103,7 +103,7 @@ default: &DEFAULT
     log_scaling_factors: False
     memory_efficient_optim: None
     low_rank_cautious: False
-    reset_optimizer_states: False
+    reset_sparse_optimizer_states: False
 
   # Dataset related
   data:

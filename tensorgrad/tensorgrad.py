@@ -204,8 +204,8 @@ class TensorGRaD(Optimizer):
                 # --- Initialize Adam State Buffers ---
                 if "rank" in group:
                     # Composite branch: separate buffers for first and second parts
+                    dtype = torch.cfloat if self.enforce_full_complex_precision and grad_is_complex else grad_dtype                        
                     if "first_exp_avg" not in state or "second_exp_avg" not in state:
-                        dtype = torch.cfloat if self.enforce_full_complex_precision and grad_is_complex else grad_dtype                        
                         state["first_exp_avg"] = torch.zeros_like(first_grad, dtype=dtype)
                         state["first_exp_avg_sq"] = torch.zeros_like(first_grad, dtype=dtype)
                         state["second_exp_avg"] = torch.zeros_like(second_grad, dtype=dtype)
@@ -220,11 +220,14 @@ class TensorGRaD(Optimizer):
                         print(f"Total params: {state['total_params']}")
                         print(f"Sparse ratio: {state['sparse_ratio']} and rank: {state['rank']}")
                     else:
-                        # check if sparse is first and should_update_projector
-                        if state["sparse_is_first"] and self.reset_sparse_optim_state and state["first_proj"].should_update_projector(state["step"]):
-                            # reset optim state
-                            state["first_exp_avg"] = torch.zeros_like(first_grad, dtype=dtype)
-                            state["first_exp_avg_sq"] = torch.zeros_like(first_grad, dtype=dtype)
+                        if group.get('reset_sparse_optimizer_states', False):
+                            # check if projector has attribute should_update and is True
+                            if state["sparse_is_first"] and hasattr(state["first_proj"], "should_update") and state["first_proj"].should_update:
+                                state["first_exp_avg"] = torch.zeros_like(first_grad, dtype=dtype)
+                                state["first_exp_avg_sq"] = torch.zeros_like(first_grad, dtype=dtype)
+                            elif not state["sparse_is_first"] and hasattr(state["second_proj"], "should_update") and state["second_proj"].should_update:
+                                state["second_exp_avg"] = torch.zeros_like(second_grad, dtype=dtype)
+                                state["second_exp_avg_sq"] = torch.zeros_like(second_grad, dtype=dtype)
                             
                 else:
                     # Standard Adam buffers.

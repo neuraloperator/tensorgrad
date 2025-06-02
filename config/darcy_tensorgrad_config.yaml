@@ -98,7 +98,7 @@ default: &DEFAULT
     second_scale_by_mask_ratio: False
     log_scaling_factors: False
     memory_efficient_optim: None
-    reset_optimizer_states: False
+    reset_sparse_optimizer_states: False
 
   # Dataset related
   data:

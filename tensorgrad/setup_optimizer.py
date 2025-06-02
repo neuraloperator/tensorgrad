@@ -52,7 +52,7 @@ def setup_optimizer_and_scheduler(config, model, logging_name):
             'sparse_ratio': config.opt.sparse_ratio,
             'sparse_type': config.opt.sparse_type,
             'scale_by_mask_ratio': config.opt.scale_by_mask_ratio,
-            'reset_optimizer_states': config.opt.reset_optimizer_states,
+            'reset_sparse_optimizer_states': config.opt.reset_sparse_optimizer_states,
             'enforce_full_complex_precision': getattr(config.opt, 'enforce_full_complex_precision', False),
             'svd_type': getattr(config.opt, 'svd_type', 'truncated_svd'),
             

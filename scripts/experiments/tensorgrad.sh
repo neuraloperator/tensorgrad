@@ -1,5 +1,5 @@
-# Base command
-base_cmd="torchrun --nproc_per_node=1"
+
+base_cmd="torchrun --nproc_per_node=1
 
 composite_common_params=" \
     --opt.checkpointing False \
@@ -7,10 +7,11 @@ composite_common_params=" \
     --wandb.project tensorgrad \
     --opt.learning_rate 0.001 \
     --data.batch_size 8 \
-    --opt.n_epochs 100 \
+    --opt.n_epochs 500 \
     --opt.scheduler_T_max 500 \
     --opt.update_proj_gap 1000 \
     --wandb.log False \
+    --opt.reset_sparse_optimizer_states True \
     --opt.second_proj_type low_rank \
     --opt.proj_type unstructured_sparse \
     --opt.optimizer_type tensorgrad \

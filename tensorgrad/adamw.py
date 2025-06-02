@@ -132,7 +132,7 @@ class AdamW(Optimizer):
                         state["projector"] = get_projector(group, matrix_only=self.matrix_only, 
                                                            support_complex=self.support_complex)
                         # Reset optimizer states if requested when creating new projector
-                        if group.get("reset_optimizer_states", False):
+                        if group.get("reset_sparse_optimizer_states", False):
                             state.pop("exp_avg", None)
                             state.pop("exp_avg_sq", None)
                             state["step"] = 0

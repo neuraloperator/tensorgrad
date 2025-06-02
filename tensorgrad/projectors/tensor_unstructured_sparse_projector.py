@@ -44,7 +44,7 @@ class TensorGradUnstructuredProjector:
         self.scale_by_mask_ratio = scale_by_mask_ratio
         self.scale_factor = scale  # Will be updated if scale_by_mask_ratio=True
         self.device = None
-
+        self.should_update = False
         self._orig_shape = None
         self._indices = None
         self._last_iter = -1
@@ -55,10 +55,10 @@ class TensorGradUnstructuredProjector:
     def should_update_projector(self, iteration):
         """Check if the projector indices should be updated in this iteration"""
         if self._indices is None:
-            return True
+            self.should_update = True
         if self.update_gap_scheduler is not None:
-            return self.update_gap_scheduler.should_update(iteration)
-        return False
+            self.should_update = self.update_gap_scheduler.should_update(iteration)
+        return self.should_update
 
     def project(self, full_grad: torch.Tensor, iteration: int) -> torch.Tensor:
         with record_function("### UNSTRUCTURED_SPARSE_PROJECT_FORWARD"):

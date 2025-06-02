@@ -104,7 +104,7 @@ default: &DEFAULT
     second_rank: [1.0]  # Used if second projector is low_rank
     second_scale_by_mask_ratio: False # if True and sparse projector is used, scale will be multiplied by the mask ratio
     
-    reset_optimizer_states: False
+    reset_sparse_optimizer_states: False
     
 
   # Dataset related

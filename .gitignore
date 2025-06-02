@@ -112,7 +112,8 @@ inspect_data_1024
 ckpt/
 plots/
 
-
+config/wandb_api_key.txt
+wandb_api_key.txt
 *.pkl
 *.parquet
 *.nfs
