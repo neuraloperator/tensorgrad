@@ -126,10 +126,12 @@ Profiling outputs are written to `memstats/` and `profiler_outputs/`.
 If you use this code, please cite:
 
 ```bibtex
-@article{tensorgrad,
+@misc{tensorgrad,
   title={TensorGRaD: Tensor Gradient Robust Decomposition for Memory-Efficient Neural Operator Training},
-  author={...},
-  journal={...},
-  year={2025}
+  author={Sebastian Loeschcke and David Pitt and Robert Joseph George and Jiawei Zhao and Cheng Luo and Yuandong Tian and Jean Kossaifi and Anima Anandkumar},
+  year={2025},
+  eprint={2501.02379},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG}
 }
 ```
