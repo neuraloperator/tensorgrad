@@ -5,7 +5,7 @@ base_cmd="torchrun --nproc_per_node=1"
 common_params=" \
     --opt.optimizer_type adamw \
     --opt.checkpointing False \
-    --wandb.entity wandb_entity \
+    --wandb.entity sloeschcke \
     --wandb.project tensorgrad \
     --opt.n_epochs 500 \
     --opt.scheduler_T_max 500 \

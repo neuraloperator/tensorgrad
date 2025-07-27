@@ -4,7 +4,7 @@ mkdir -p profiler_outputs
 # Common parameters
 common_params=" \
     --opt.checkpointing False \
-    --wandb.entity wandb_entity \
+    --wandb.entity sloeschcke \
     --opt.tensorgrad False \
     --opt.n_epochs 1 \
     --opt.scheduler_T_max 1 \

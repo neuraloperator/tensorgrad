@@ -8,7 +8,6 @@ from tensorgrad.adamw import AdamW
 from tensorgrad.tensorgrad import TensorGRaD
 from tensorgrad.training_utils import get_scheduler
 from tensorgrad.adam_full import AdamW as AdamWFull
-
 def setup_optimizer_and_scheduler(config, model, logging_name):
     """Set up optimizer based on whether galore is enabled"""
     # Handle conditional imports based on config
@@ -36,6 +35,12 @@ def setup_optimizer_and_scheduler(config, model, logging_name):
             
         # if p has less params that 1000 then remove it
         tensorgrad_params = [p for p in tensorgrad_params if p.numel() > 1000] # remove the small params where no real memory is saved
+        
+        # Filter by minimum dimensions (default 0 means no filtering)
+        min_dims = getattr(config.opt, 'min_dims_for_tensorgrad', 0)
+        if min_dims > 0:
+            tensorgrad_params = [p for p in tensorgrad_params if p.dim() > min_dims]
+            
         id_tensorgrad_params = [id(p) for p in tensorgrad_params]
         regular_params = [p for p in model.parameters() if id(p) not in id_tensorgrad_params]
 

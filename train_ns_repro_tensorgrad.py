@@ -22,7 +22,8 @@ from tensorgrad.profiler_trainer import Trainer as ProfilerTrainer
 
 
 from tensorgrad.setup_optimizer import setup_optimizer_and_scheduler
-
+import random
+import numpy as np
 
 import argparse
 
@@ -57,7 +58,7 @@ if config.opt.tensorgrad:
         logging_name += "_rollup_" + str(config.opt.first_dim_rollup)
     else:
         logging_name += "_tensorgrad_" 
-    if config.fno.activation_checkpoint:
+    if getattr(getattr(config, config.arch), "activation_checkpoint", False):
         logging_name += "_activation_ckpt"
     if config.opt.per_layer_opt:
         logging_name += "_perlayer"
@@ -80,6 +81,12 @@ if config.distributed.use_distributed:
     print(f"{dist.get_world_size()=}")
 else:
     device, is_logger = setup(config)
+    
+# set seed for all processes
+torch.manual_seed(config.distributed.seed)
+random.seed(config.distributed.seed)
+np.random.seed(config.distributed.seed)
+
 
 
 
@@ -293,6 +300,13 @@ if config.verbose and is_logger:
     print(f"\n * Test: {eval_losses}")
     print(f"\n### Beginning Training...\n")
     sys.stdout.flush()
+# check if fno or tfno
+arch_config = getattr(config, config.arch)
+# only if fno else say false
+if config.arch == 'fno':
+    mixed_precision = True if config.fno.fno_block_precision in ["half", "mixed"] else False
+else:
+    mixed_precision= False
 
 if config.opt.profiling:
     trainer = ProfilerTrainer(
@@ -305,7 +319,7 @@ if config.opt.profiling:
         log_output=config.wandb.log_output,
         use_distributed=config.distributed.use_distributed,
         verbose=config.verbose and is_logger,
-        mixed_precision= True if config.fno.fno_block_precision in ["half", "mixed"] else False,
+        mixed_precision=mixed_precision,
         max_batches=config.opt.max_batches
         )
 else:
@@ -320,7 +334,7 @@ else:
         use_distributed=config.distributed.use_distributed,
         verbose=config.verbose and is_logger,
         log_train_interval=config.wandb.get('log_train_interval', -1),
-        mixed_precision=True if config.fno.fno_block_precision in ["half", "mixed"] else False,
+        mixed_precision=mixed_precision,
     )
 
 # Log parameter count

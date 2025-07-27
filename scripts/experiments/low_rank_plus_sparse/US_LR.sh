@@ -3,7 +3,7 @@ base_cmd="torchrun --nproc_per_node=1"
 
 composite_common_params=" \
     --opt.checkpointing False \
-    --wandb.entity wandb_entity \
+    --wandb.entity sloeschcke \
     --wandb.project tensorgrad \
     --opt.learning_rate 0.001 \
     --opt.n_epochs 500 \

@@ -77,7 +77,6 @@ class TensorGRaD(Optimizer):
         self.id_counter = 0
         self.use_sum = use_sum
         self.run_name = run_name
-        self.reset_sparse_optim_state = True
 
         if enforce_full_complex_precision:
             print("### Using TensorGRaD with full complex precision for states ###")
