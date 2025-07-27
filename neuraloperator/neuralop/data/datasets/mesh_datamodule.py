@@ -96,9 +96,13 @@ class MeshDataModule:
 
         meshes = []
         for ind in mesh_ind:
-            mesh = o3d.io.read_triangle_mesh(
-                str(data_dir / (item_dir_name + ind + "/tri_mesh.ply"))
-            )
+            # Try the expected path first (for compatibility)
+            mesh_path = data_dir / (item_dir_name + ind + "/tri_mesh.ply")
+            if not mesh_path.exists():
+                # Fallback to the actual file structure: mesh_XXX.ply directly in data directory
+                mesh_path = data_dir / f"mesh_{ind}.ply"
+            
+            mesh = o3d.io.read_triangle_mesh(str(mesh_path))
             meshes.append(mesh)
 
         # Dataset wide bounding box

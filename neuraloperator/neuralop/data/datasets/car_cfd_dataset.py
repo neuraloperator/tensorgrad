@@ -66,7 +66,7 @@ class CarCFDDataset(MeshDataModule):
         """Initialize the CarCFDDataset.
         """
         self.zenodo_record_id = "13936501"
-
+        
         if isinstance(root_dir, str):
             root_dir = Path(root_dir)
         
@@ -84,7 +84,7 @@ class CarCFDDataset(MeshDataModule):
             query_res=query_res,
             attributes=['press']
         )
-
+        
         # process data list to remove specific vertices from pressure to match number of vertices
         for i, data in enumerate(self.train_data.data_list):
             press = data['press']

@@ -17,19 +17,8 @@ nvidia-smi
 eval "$(conda shell.bash hook)"
 conda activate tensorgrad
 
-# Base command
-base_cmd="python"
-
-common_params=" \
-    --config_file fnogno_carcfd_config.yaml \
-    --wandb.entity sloeschcke \
-    --wandb.project fnogno_carcfd \
-    --data.n_train 5 \
-    --data.n_test 5 \
-    --wandb.log False"
-
-# Experiment 1: Shape-Net Car reproduction (target ~7.12% test error)
-$base_cmd train_fnogno_carcfd.py $common_params \
+# Your LSF job parameters
+python train_fnogno_carcfd2.py \
+    --wandb.log False \
     --wandb.name fnogno_shapenet_car_paper \
     --wandb.group "paper-reproduction"
-

@@ -124,3 +124,4 @@ tensor_stats_plots/
 tensor_stats/
 profiler_outputs/
 timing_outputs/
+data/car_cfd
