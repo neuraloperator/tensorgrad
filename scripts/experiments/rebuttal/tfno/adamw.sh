@@ -26,7 +26,7 @@ composite_common_params=" \
     --opt.checkpointing False \
     --wandb.entity sloeschcke \
     --opt.learning_rate 0.001 \
-    --opt.n_epochs 250 \
+    --opt.n_epochs 500 \
     --opt.scheduler_T_max 500 \
     --data.batch_size 8 \
     --opt.update_proj_gap 1000 \
@@ -36,10 +36,18 @@ composite_common_params=" \
     --opt.tensorgrad False"
 
 # loop over different ranks
-for rank in 0.15 0.25 0.5 0.75
+for rank in 0.15 0.25 0.5
 do
     $base_cmd train_ns_repro_tensorgrad.py $composite_common_params \
-        --wandb.name adamw_tfno_r_$rank \
+        --wandb.name adamw_lr001_tfno_r_$rank \
+        --tfno.rank $rank
+done
+
+for rank in 0.15 0.25 0.5
+do
+    $base_cmd train_ns_repro_tensorgrad.py $composite_common_params \
+        --wandb.name adamw_lr0005_tfno_r_$rank \
+        --opt.learning_rate 0.0005 \
         --tfno.rank $rank
 done
 

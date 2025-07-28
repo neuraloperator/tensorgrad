@@ -19,16 +19,19 @@ conda activate tensorgrad
 
 
 #for lr in 0.0005 0.001
-for lr in 0.00025 0.0005 0.001
+#for lr in 0.00025 0.0005 0.001
+for lr in 0.00025 
 do
     # Your LSF job parameters
     python train_fnogno_carcfd.py \
         --opt.n_epochs 100 \
-        --opt.weight_decay 0.00025 \
+        --opt.step_size 100 \
+        --opt.weight_decay 0.001 \
         --opt.learning_rate $lr \
         --fnogno.gno_radius 0.055 \
         --fnogno.fno_n_modes "[32,32,32]" \
         --wandb.name 32mode_lr-${lr} \
+        --fnogno.gno_coord_embed_dim 32 \
         --wandb.group "paper-reproduction"
 done
 

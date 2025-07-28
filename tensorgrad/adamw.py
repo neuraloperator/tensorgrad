@@ -138,8 +138,8 @@ class AdamW(Optimizer):
                             state["step"] = 0
 
                     if grad.ndim == 5: # if complex tensor is stored as 2 real tensors
-                        grad = torch.view_as_complex(grad)
-
+                        if not torch.is_complex(grad):
+                            grad = torch.view_as_complex(grad)
                     if self.matrix_only or grad.ndim <= 2:
                         proj_input = grad.view(grad.shape[0],-1)
                         if grad.ndim > 2:                            

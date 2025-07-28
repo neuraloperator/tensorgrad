@@ -60,6 +60,7 @@ def setup_optimizer_and_scheduler(config, model, logging_name):
             'reset_sparse_optimizer_states': config.opt.reset_sparse_optimizer_states,
             'enforce_full_complex_precision': getattr(config.opt, 'enforce_full_complex_precision', False),
             'svd_type': getattr(config.opt, 'svd_type', 'truncated_svd'),
+            'support_complex': config.opt.adamw_support_complex,  # Add support_complex parameter
             
             # Second projector parameters
             'second_proj_type': config.opt.second_proj_type,

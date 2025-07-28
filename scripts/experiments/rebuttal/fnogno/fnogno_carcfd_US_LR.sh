@@ -18,18 +18,26 @@ eval "$(conda shell.bash hook)"
 conda activate tensorgrad
 
 
-#for lr in 0.0005 0.001
-for lr in 0.00025 0.0005 0.001
+for lr in 0.0005 0.001  
 do
     # Your LSF job parameters
     python train_fnogno_carcfd.py \
-        --opt.n_epochs 100 \
-        --opt.weight_decay 0.00025 \
-        --opt.learning_rate $lr \
-        --fnogno.gno_radius 0.055 \
-        --fnogno.fno_n_modes "[32,32,32]" \
-        --wandb.name 32mode_lr-${lr} \
-        --wandb.group "paper-reproduction"
+    --wandb.log True \
+    --opt.n_epochs 100 \
+    --opt.weight_decay 0.00025 \
+    --opt.learning_rate $lr \
+    --opt.tensorgrad True \
+    --opt.optimizer_type tensorgrad \
+    --opt.proj_type unstructured_sparse \
+    --opt.sparse_ratio 0.05 \
+    --opt.sparse_type randk \
+    --opt.second_proj_type low_rank \
+    --opt.second_rank 0.20 \
+    --opt.adamw_support_complex True \
+    --opt.enforce_full_complex_precision True \
+    --fnogno.gno_radius 0.055 \
+    --wandb.name US-LR_lr-${lr} \
+    --wandb.group "paper-reproduction"
+    #--fnogno.gno_radius 0.055 \
 done
 
-#fno_n_modes: List[int] = [16, 16, 16]

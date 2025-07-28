@@ -174,7 +174,11 @@ class TensorGRaD(Optimizer):
                         print(f"First projector is sparse: {state['sparse_is_first']} and second is low-rank: {not state['sparse_is_first']}")
                     
                     if grad.ndim == 5: # if complex tensor is stored as 2 real tensors
-                        grad = torch.view_as_complex(grad)
+                        if not torch.is_complex(grad):
+                            grad = torch.view_as_complex(grad)
+                    elif torch.is_complex(grad) and not self.support_complex:
+                        # If gradient is complex but we don't support complex, convert to real
+                        grad = torch.view_as_real(grad)
 
                     with record_function("#### GRAD FORWARD PROJ ####"):
                         first_proj = state["first_proj"]
